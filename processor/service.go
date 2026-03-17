@@ -2,10 +2,10 @@ package processor
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 
 	"github.com/kristiyanpd/interview/antimoneylaundering/transaction"
-	"gorm.io/gorm"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 // Process should enforce limits, perform money movement atomically, and store
 // the resulting transaction. Replace the stubbed implementation as you build
 // out the service.
-func Process(ctx context.Context, db *gorm.DB, tx *transaction.Transaction) error {
+func Process(ctx context.Context, db *sql.DB, tx *transaction.Transaction) error {
 	if tx == nil {
 		return ErrNilTransaction
 	}

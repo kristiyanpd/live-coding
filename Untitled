@@ -1,0 +1,70 @@
+## Anti–Money-Laundering Coding Exercise
+
+You are building a very small anti–money-laundering (AML) engine for a fictional payments company. The goal is to design a simple, well-structured service that can ingest transfer requests, apply limits, and persist the results.
+
+⏰ **Estimated duration: 2.5 hours**
+
+### What’s already in place
+
+- Domain models for `Account` and `Transaction`
+- Limit configuration defaults in `limit/config.go`
+- Docker Compose stack with PostgreSQL 18 and DDL SQL (`db/init/01_schema.sql`) that creates tables and indexes
+
+### Your primary tasks
+
+1. **Database layer**  
+   - Wire the application to PostgreSQL (running via Docker).  
+   - Design whatever persistence boundaries you need to store accounts and transactions safely.
+
+2. **AML limits**  
+   Enforce the following for outgoing transfers (per `FromAccountID`):
+   - Maximum single transaction amount: `300`
+   - Maximum number of transactions per day: `10`
+   - Maximum amount sent per day: `5000`
+   - Maximum number of transactions per month: `50`
+   - Maximum amount sent per month: `15000`
+
+3. **Concurrent processing**  
+   - Design and build your own worker/concurrency pipeline that processes requests with exactly `3` workers.  
+   - Decide how jobs are queued, retried, and reported back to callers.
+
+### Stretch ideas (optional)
+
+- Expose an HTTP or gRPC API for submitting transactions and retrieving stats.
+- Add metrics/logging/tracing that would help an SRE diagnose AML failures.
+- Build automated tests that cover limit enforcement, concurrent transfers, and DB boundaries.
+
+### Getting started
+
+```bash
+# Spin up Postgres (default creds: aml/aml)
+docker compose up -d db
+
+# Run tests / lint (add more as you build)
+go test ./...
+
+# Launch the sample main program
+go run ./...
+```
+
+The Docker container automatically runs the SQL scripts in `db/init` on first boot.  
+If you add new migrations, place them in that directory and re-create the container or apply them manually.
+
+### Repository layout
+
+- `account/` – domain types
+- `transaction/` – domain types
+- `limit/` – limit configuration helpers
+- `processor/` – orchestration logic
+- `db/init/` – SQL bootstrap scripts for PostgreSQL
+
+### What we look for
+
+- Clear, testable design with well-separated layers
+- Thoughtful concurrency control (no data races under `go test -race`)
+- Meaningful, actionable error handling
+- Tests that give you (and us) confidence in the limit logic and data integrity
+
+### Need interviewer-only material?
+
+See `README.interviewer.md` for scoring guidelines, hints, and runbook notes. Please stop reading there if you are a candidate. Good luck! 👊

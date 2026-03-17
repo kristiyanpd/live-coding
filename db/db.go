@@ -1,25 +1,22 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
 
-	"github.com/kristiyanpd/interview/antimoneylaundering/account"
-	"github.com/kristiyanpd/interview/antimoneylaundering/transaction"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	_ "github.com/lib/pq"
 )
 
-func Open(dsn string) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+func Open(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("db: open: %w", err)
 	}
-	return db, nil
-}
 
-func Migrate(db *gorm.DB) error {
-	return db.AutoMigrate(
-		&account.AccountDAO{},
-		&transaction.TransactionDAO{},
-	)
+	err = db.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("db: ping: %w", err)
+	}
+
+	return db, nil
 }
