@@ -9,14 +9,12 @@ You are building a very small anti–money-laundering (AML) engine for a fiction
 - Domain models for `Account` and `Transaction`
 - Limit configuration defaults in `limit/config.go`
 - Docker Compose stack with PostgreSQL 18
-- GORM DAO structs and domain mappers in `account/repository.go` and `transaction/repository.go`
-- Auto-migration via `db/db.go` (tables and check constraints are managed by GORM)
+- Auto-migration via `db/init.sql`
 
 ### Your primary tasks
 
 1. **Database layer**  
-   - The application already connects to PostgreSQL (running via Docker) and auto-migrates the schema via GORM.  
-   - DAO structs and domain mappers are provided in `account/repository.go` and `transaction/repository.go`; build whatever repository/persistence logic you need on top of them and ensure transfers are performed atomically.
+   - The application already connects to PostgreSQL (running via Docker) and auto-migrates the schema.  
 
 2. **AML limits**  
    Enforce the following for outgoing transfers (per `FromAccountID`):
@@ -49,15 +47,13 @@ go test ./...
 go run ./...
 ```
 
-GORM auto-migrates the schema on startup. If you add new models or fields, just update the DAO structs and the `Migrate` function in `db/db.go`.
-
 ### Repository layout
 
-- `account/` – domain types and GORM DAO
-- `transaction/` – domain types and GORM DAO
+- `account/` – domain types 
+- `transaction/` – domain types 
 - `limit/` – limit configuration helpers
 - `processor/` – orchestration logic
-- `db/` – GORM database connection and auto-migration
+- `db/` – database connection and auto-migration
 
 ### What we look for
 
